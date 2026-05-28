@@ -9,6 +9,9 @@
  */
 
 import type * as http from "../http.js";
+import type * as invites from "../invites.js";
+import type * as members from "../members.js";
+import type * as studios from "../studios.js";
 import type * as users from "../users.js";
 
 import type {
@@ -19,6 +22,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   http: typeof http;
+  invites: typeof invites;
+  members: typeof members;
+  studios: typeof studios;
   users: typeof users;
 }>;
 

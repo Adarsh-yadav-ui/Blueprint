@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "Blueprint",
   description:
     "Blueprint - A multi-tenant game design documentation tool for indie studios. Build character sheets, quest logs, world maps, and more — with real-time collaboration, AI-powered writing, and per-seat billing.",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({
