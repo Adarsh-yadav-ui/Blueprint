@@ -3,6 +3,7 @@ import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
+import { polar } from "./billing";
 
 const http = httpRouter();
 
@@ -51,4 +52,5 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
   }
 }
 
+polar.registerRoutes(http as any);
 export default http;
