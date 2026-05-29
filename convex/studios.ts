@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 // ──────────────────────────────────────────
@@ -199,5 +199,15 @@ export const deleteStudio = mutation({
     await Promise.all(members.map((m: any) => ctx.db.delete(m._id)));
 
     return true;
+  },
+});
+
+export const updatePlanFromWebhook = internalMutation({
+  args: {
+    studioId: v.id("studios"),
+    plan: v.union(v.literal("indie"), v.literal("pro")),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.studioId, { plan: args.plan });
   },
 });

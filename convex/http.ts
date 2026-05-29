@@ -4,6 +4,7 @@ import { internal } from "./_generated/api";
 import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
 import { polar } from "./billing";
+import { Id } from "./_generated/dataModel";
 
 const http = httpRouter();
 
@@ -52,5 +53,18 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
   }
 }
 
-polar.registerRoutes(http as any);
+polar.registerRoutes(http as any, {
+  onSubscriptionCreated: async (ctx, event) => {
+    const studioId = event.data.metadata?.studioId as string;
+    if (!studioId) return;
+
+    const plan = event.data.amount === 1200 ? "indie" : "pro";
+
+    await ctx.runMutation(internal.studios.updatePlanFromWebhook, {
+      studioId: studioId as Id<"studios">,
+      plan,
+    });
+  },
+});
+
 export default http;

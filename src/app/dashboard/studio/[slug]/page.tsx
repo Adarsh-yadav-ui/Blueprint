@@ -1,54 +1,62 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { CheckoutLink } from "@convex-dev/polar/react";
 import { api } from "@convex/_generated/api";
 import { useParams } from "next/navigation";
+import { useQuery } from "convex/react";
 
-export default function StudioPage() {
+export default function DashboardPage() {
   const { slug } = useParams<{ slug: string }>();
-  const studio = useQuery(api.studios.getStudioBySlug, { slug });
+  const studioQuery = useQuery(api.studios.getStudioBySlug, { slug });
+  const { user, isLoaded } = useUser();
 
-  if (studio === undefined) {
-    return (
-      <div className="p-6">
-        <p className="text-sm text-muted-foreground">Loading...</p>
-      </div>
-    );
+  // Loading hone tak render mat karo
+  if (!isLoaded || studioQuery === undefined) {
+    return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
   }
 
-  if (studio === null) {
-    return (
-      <div className="p-6">
-        <p className="text-sm text-muted-foreground">Studio not found</p>
-      </div>
-    );
+  // Studio nahi mila
+  if (studioQuery === null) {
+    return <div className="p-6 text-sm text-muted-foreground">Studio not found</div>;
+  }
+
+  // User nahi mila
+  if (!user) {
+    return <div className="p-6 text-sm text-muted-foreground">Not authenticated</div>;
   }
 
   return (
     <div className="p-6 flex flex-col gap-4">
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-base border-2 border-border bg-main flex items-center justify-center font-heading text-main-foreground text-xl">
-          {studio.name.charAt(0).toUpperCase()}
-        </div>
-        <div>
-          <h1 className="text-2xl font-heading">{studio.name}</h1>
-          {studio.description && (
-            <p className="text-sm text-muted-foreground">{studio.description}</p>
-          )}
-        </div>
-      </div>
+      <UserButton />
 
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-base px-2 py-0.5 rounded-base border border-border capitalize">
-          {studio.plan}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {studio.seatCount} {studio.seatCount === 1 ? "seat" : "seats"}
-        </span>
-        <span className="text-xs text-muted-foreground capitalize">
-          Your role — {studio.role}
-        </span>
-      </div>
+      <p className="text-sm text-muted-foreground">
+        Studio — {studioQuery.name} ({studioQuery._id})
+      </p>
+
+      <CheckoutLink
+        polarApi={api.billing}
+        productIds={["07584e5f-8c3f-4099-9e86-31dd7dc133de"]}
+        embed={false}
+        metadata={{
+          userId: user.id,
+          studioId: studioQuery._id,
+        }}
+      >
+        Upgrade to Indie
+      </CheckoutLink>
+
+      <CheckoutLink
+        polarApi={api.billing}
+        productIds={["8152d6a7-0b56-4fe3-b39a-98333a6fcfb7"]}
+        embed={false}
+        metadata={{
+          userId: user.id,
+          studioId: studioQuery._id,
+        }}
+      >
+        Upgrade to Pro
+      </CheckoutLink>
     </div>
   );
 }
