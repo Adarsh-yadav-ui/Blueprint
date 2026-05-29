@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as billing from "../billing.js";
 import type * as http from "../http.js";
 import type * as invites from "../invites.js";
 import type * as members from "../members.js";
@@ -21,6 +22,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  billing: typeof billing;
   http: typeof http;
   invites: typeof invites;
   members: typeof members;
@@ -54,4 +56,6 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  polar: import("@convex-dev/polar/_generated/component.js").ComponentApi<"polar">;
+};
